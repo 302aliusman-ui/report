@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Report of Madam 💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:linear-gradient(-45deg,#ff9a9e,#fad0c4,#ffdde1,#ffc3a0);
+  background-size:400% 400%;
+  animation:gradientMove 12s ease infinite;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* Floating Hearts Background */
+.bg-heart{
+position:absolute;
+color:rgba(255,0,100,0.2);
+font-size:2rem;
+animation:float 8s linear infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(100vh) scale(0.5); opacity:0;}
+50%{opacity:0.7;}
+100%{transform:translateY(-10vh) scale(1.2); opacity:0;}
+}
+
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.card{
+background:rgba(255,255,255,0.25);
+backdrop-filter:blur(15px);
+padding:30px;
+border-radius:25px;
+width:90%;
+max-width:500px;
+text-align:center;
+box-shadow:0 15px 40px rgba(0,0,0,0.15);
+transition:.5s;
+animation:fadeIn .6s ease;
+position:relative;
+z-index:10;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+h1,h2,h3{
+font-family:'Great Vibes',cursive;
+color:#d6336c;
+margin-bottom:15px;
+}
+
+h1{font-size:2.5rem;}
+h2{font-size:2rem;}
+h3{font-size:1.4rem;}
+
+p{font-size:1rem;margin-bottom:20px;}
+
+.btn{
+padding:12px 28px;
+border:none;
+border-radius:50px;
+cursor:pointer;
+margin:10px auto;
+display:block;
+font-weight:600;
+position:relative;
+overflow:hidden;
+transition:.3s;
+}
+
+.btn-primary{background:#ff4d6d;color:white;}
+.btn-secondary{background:white;color:#ff4d6c;}
+
+.btn:hover{
+transform:translateY(-3px);
+box-shadow:0 10px 25px rgba(255,77,109,.4);
+}
+
+input[type=text]{width:100%;padding:10px;border-radius:10px;border:none;margin-top:5px;}
+
+.radio-group{display:flex;justify-content:center;gap:20px;margin-top:10px;flex-wrap:wrap;}
+
+.hidden{display:none;}
+
+.burst-heart{position:absolute;color:#ff4d6d;font-size:20px;animation:explode 1s ease forwards;}
+
+@keyframes explode{
+0%{transform:scale(0);opacity:1;}
+100%{transform:translate(var(--x),var(--y)) scale(1.5);opacity:0;}
+}
+
+.modal{
+position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);
+display:flex;justify-content:center;align-items:center;visibility:hidden;opacity:0;transition:.3s;
+}
+
+.modal.active{visibility:visible;opacity:1;}
+
+.modal-content{
+background:white;padding:25px;border-radius:15px;text-align:center;
+}
+
+@media(max-width:480px){
+h1{font-size:2rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- Floating Hearts Container -->
+<div id="bg-hearts"></div>
+
+<!-- LANDING PAGE -->
+<div id="landing" class="card">
+<h1>Daily Report of Madam 💖</h1>
+<button class="btn btn-primary" onclick="showNext()">Next ❤️</button>
+<button class="btn btn-secondary" onclick="showReport()">Report 💌</button>
+</div>
+
+<!-- NEXT PAGE WITH REPORT HEADING -->
+<div id="next" class="card hidden">
+<h2>My Dearest 💕</h2>
+<p>
+My love, I miss you deeply every single day. You are my peace, my happiness, and my forever. ❤️
+</p>
+<h3>Report 💌</h3>
+<button class="btn btn-secondary" onclick="goHome()">Back</button>
+<button class="btn btn-primary" onclick="showReport()">Go to Report 💖</button>
+</div>
+
+<!-- REPORT FORM -->
+<div id="report" class="card hidden">
+<h2>Malkay Husna 💕💞💓</h2>
+
+<h3>Kia hal ha?</h3>
+<input type="text" id="status">
+
+<h3 style="margin-top:15px;">Do you miss me?</h3>
+<div class="radio-group">
+<label><input type="radio" name="miss" value="Yes"> Yes ❤️</label>
+<label><input type="radio" name="miss" value="No"> No 💔</label>
+</div>
+
+<button class="btn btn-primary" onclick="submitReport()">Submit</button>
+<button class="btn btn-secondary" onclick="goHome()">Back</button>
+</div>
+
+<div class="modal" id="successModal">
+<div class="modal-content">
+<h3>Report Sent Successfully 💖</h3>
+<button class="btn btn-primary" onclick="closeModal()">Close</button>
+</div>
+</div>
+
+<script>
+// EmailJS INIT
+emailjs.init("U8YJig_oJJ_ZIBuD_");
+
+// Floating Hearts Background
+function createHearts(){
+  const container=document.getElementById('bg-hearts');
+  for(let i=0;i<20;i++){
+    let h=document.createElement('div');
+    h.className='bg-heart';
+    h.innerHTML='❤';
+    h.style.left=Math.random()*100+'vw';
+    h.style.animationDuration=(Math.random()*5+5)+'s';
+    h.style.fontSize=(Math.random()*25+10)+'px';
+    container.appendChild(h);
+  }
+}
+createHearts();
+
+// Navigation
+function showNext(){burst(); toggle("next");}
+function showReport(){burst(); toggle("report");}
+function goHome(){toggle("landing");}
+function toggle(id){
+document.getElementById("landing").classList.add("hidden");
+document.getElementById("next").classList.add("hidden");
+document.getElementById("report").classList.add("hidden");
+document.getElementById(id).classList.remove("hidden");
+}
+
+// Heart burst animation
+function burst(){
+for(let i=0;i<15;i++){
+let heart=document.createElement('div');
+heart.className='burst-heart';
+heart.innerHTML='❤';
+heart.style.left='50%';
+heart.style.top='50%';
+heart.style.position='fixed';
+heart.style.setProperty('--x',(Math.random()-0.5)*300+'px');
+heart.style.setProperty('--y',(Math.random()-0.5)*300+'px');
+document.body.appendChild(heart);
+setTimeout(()=>heart.remove(),1200);
+}
+}
+
+// Submit Report
+function submitReport(){
+let status=document.getElementById("status").value.trim();
+let miss=document.querySelector('input[name="miss"]:checked');
+
+if(status==="" || !miss){alert("Please fill all fields 💖"); return;}
+
+const params={message:`Status: ${status}\nMisses me: ${miss.value}`};
+
+emailjs.send("service_wmg1pkc","template_9rfguo2",params)
+.then(function(response){
+document.getElementById("successModal").classList.add("active");
+document.getElementById("status").value="";
+document.querySelectorAll('input[name="miss"]').forEach(r=>r.checked=false);
+})
+.catch(function(err){
+alert("Email sending failed ❌ Check setup.");
+console.error(err);
+});
+}
+
+function closeModal(){
+document.getElementById("successModal").classList.remove("active");
+goHome();
+}
+</script>
+
+</body>
+</html>
